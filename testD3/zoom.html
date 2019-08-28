@@ -47,30 +47,31 @@
         drawRect(0,500,100,100, "#000", {});
     }
     // drawRect(10,10,100,100);
-    const scale = d3.scaleLinear().domain([-1,601]).range([-1,601]).nice();
-    const scaleY = d3.scaleLinear().domain([-1,601]).range([-1,601]).nice();
+    const scale = d3.scaleLinear().domain([-1,601]).range([-1,601]);
+    const scaleY = d3.scaleLinear().domain([-1,601]).range([-1,601]);
     let gapsX = 0;
     drawTicks(scale);
     function drawTicks(scale) {
         const ticks = scale.ticks(10);
+        console.log(scale.domain());
+        console.log(ticks);
         gapsX = getNewScaleS() ? 600 / ticks.length : gapsX;
         // 第一个刻度是起点，间隔是 gaps，重新计算各个点的位置
         const reSetTicks = ticks.map( (item, index) => index === 0 ? item - ticks[0] : item - ticks[0] );
-        context.save();
         reSetTicks.forEach( (item, index) => {
-            // 预先缩小线宽，防止缩放时出现线宽变宽
+            context.save();
             context.lineWidth = 1;
             context.strokeStyle = "#999";
-            index !== 0 && context.translate(0, scale(ticks[index]));
+            context.translate(scale(ticks[index]), 0);
             context.moveTo(item, 0);
             context.lineTo(item, 700);
             context.stroke();
             context.fillStyle = "red";
             context.fillText(ticks[index], item, 10);
             context.fill();
+            context.restore();
             // }
         } );
-        context.restore();
     }
     function getNewScaleS() {
         if ( d3.event && scaleSX !== d3.event.transform.k ) {
@@ -86,26 +87,25 @@
     let gapsY = 0
     function drawTicksY(scale) {
         const ticks = scale.ticks(10);
-        console.log(ticks);
         // 刻度在平移时会时不时的少一个，这样子保证有最后一个刻度是在画布外，即使少一个也觉察不到
         gapsY = getNewScaleS() ? 600 / ticks.length : gapsY;
         // 第一个刻度是起点，间隔是 gaps，重新计算各个点的位置
         const reSetTicks = ticks.map( (item, index) => index === 0 ? item - ticks[0] : item - ticks[0] );
-        context.save();
         reSetTicks.forEach( (item, index) => {
             // 预先缩小线宽，防止缩放时出现线宽变宽
+            context.save();
             context.lineWidth = 1;
             context.strokeStyle = "#999";
-            index !== 0 && context.translate(0, scale(ticks[index]));
+            context.translate(0, scale(ticks[index]));
             context.moveTo(0, item);
             context.lineTo(700, item);
             context.stroke();
             context.fillStyle = "red";
             context.fillText(ticks[index], 10, item);
             context.fill();
+            context.restore();
             // }
         } );
-        context.restore();
     }
     canvas.call(zoom);
 </script>
