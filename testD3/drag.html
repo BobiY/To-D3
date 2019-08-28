@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ch">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #canvas{
+            border: 1px solid #333;
+            margin: 50px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="800"></canvas>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+    const canvas = d3.select("#canvas");
+    const drag = d3.drag();
+    drag.container(canvas.node());
+    const context = canvas.node().getContext("2d");
+    function drawRect(dx=0, dy=0, width, height, color) {
+        context.beginPath();
+        context.strokeStyle = color || "red";
+        context.rect(dx, dy, width, height);
+        context.stroke();
+        context.closePath();
+    }
+    // drawRect(0,0);
+</script>
+<script>
+    const random = Math.random;
+    const width = 800;
+    const height = 800;
+    let data = d3.range(2500).map(function(value, index) { return [random() * width, random() * height]; });
+    const quadtree = d3.quadtree(data);
+    quadtree.extent([-1, -1], [width + 1, height + 1]);
+    // console.log(quadtree.find(500, 450, 20));
+    function drawArc(x,y, color) {
+        context.beginPath();
+        context.strokeStyle = color || "#666";
+        context.arc(x, y, 10, 0, 2*Math.PI);
+        context.stroke();
+        context.closePath();
+    }
+    function nodes(quadtree) {
+        var nodes = [];
+        quadtree.visit(function(node, x0, y0, x1, y1) {
+            // (x0, y0) (x1, y1)代表的是当前的四叉树节点的矩形范围
+            node.x0 = x0, node.y0 = y0;
+            node.x1 = x1, node.y1 = y1;
+            nodes.push(node);
+        });
+        return nodes;
+    }
+    const range = 20;
+    drag.on("drag", () => {
+        // 检索到的是离得最近的一个
+        const e = d3.event;
+        const [dx, dy] = quadtree.find(d3.event.x, d3.event.y, 10) || [0, 0];
+
+        // 给圆环加上选中样式
+        search(quadtree, e.x - range, e.y - range, e.x + range, e.y + range);
+        data = data.filter( d => !d.selected );
+        context.clearRect(0, 0, 800, 800);
+        data.forEach( (item, index) => {
+            drawArc(...item, item.selected || item.color);
+        } );
+    });
+    canvas.call(drag);
+    const accent = d3.scaleQuantize().domain([0, data.length]).range(d3.schemePaired);
+    data.forEach( (item, index) => {
+        item.color = accent(index);
+        drawArc(...item, item.color);
+    } );
+    // nodes(quadtree).forEach( item => {
+    //     drawRect(item.x0, item.y0, (item.x1-item.x0), (item.y1-item.y0))
+    // } );
+    // 找出在搜索范围内的数据，并做上标记
+    function search(quadtree, x0, y0, x3, y3) {
+        quadtree.visit(function(node, x1, y1, x2, y2) {
+            if (!node.length) {
+                do {
+                    var d = node.data;
+                    d.selected = (d[0] >= x0) && (d[0] < x3) && (d[1] >= y0) && (d[1] < y3);
+                } while (node = node.next);
+            }
+            return x1 >= x3 || y1 >= y3 || x2 < x0 || y2 < y0;
+        });
+    }
+
+</script>
+</body>
+</html>

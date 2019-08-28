@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ch">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #canvas{
+            /* border: 1px solid #333; */
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            z-index: -1;
+        }
+        .aaa{
+            position: relative;
+        }
+        .aaa ul {
+            padding-top: 15px;
+            overflow: hidden;
+            margin: 0; 
+        }
+        .aaa ul li{
+            float: left;
+            padding: 5px 15px;
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="aaa">
+        <canvas id="canvas" width="500" height="50"></canvas>
+        <ul>
+            <li>打地基</li>
+            <li>的萨达</li>
+            <li>按时大大</li>
+            <li>阿斯顿撒旦</li>
+        </ul>
+    </div>
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.js"
+    integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+    crossorigin="anonymous"></script>
+    <script>
+        let currentBlockLeft = 40;
+        let currentBlockWidth = 78;
+        let currentBlockHeight = 36;
+        const paddingLeft = 15;
+        const paddingTop = 5;
+    </script>
+    <script>
+        const ctx = document.getElementById("canvas").getContext("2d");
+        let pl = 0; 
+        function drawLine(x1, y1, x2, y2, color) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = color || "#333";
+            ctx.lineWidth=2;
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+        }
+        function drawRect(x1, y1, width, height, color) {
+            ctx.save();
+            ctx.globalCompositeOperation="source-atop";
+            ctx.beginPath();
+            ctx.fillStyle = color || "#333";
+            // ctx.lineWidth=10;
+            ctx.rect(x1, y1, width, height);
+            ctx.fill();
+            ctx.closePath();
+            ctx.restore();
+        }
+        function drawQu(x0, y0, x1, y1, x2, y2, color) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = color || "#333";
+            ctx.lineWidth=2;
+            ctx.moveTo(x0, y0);
+            ctx.quadraticCurveTo(x1, y1, x2, y2);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+        }
+        function drawQu1(x0, y0, x1, y1, x2, y2, x3, y3, color) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.strokeStyle = color || "#333";
+            ctx.lineWidth=2;
+            ctx.moveTo(x0, y0);
+            ctx.bezierCurveTo(x1, y1, x2, y2, x3, y3);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.restore();
+        }
+        let lastLeft = 40;
+        function draw(left, width, height) {
+            
+            // 左边直线的两端点的 X 坐标
+            const startX = 0;
+            const endX = left - 5;
+
+            // 左侧曲线的开始点
+            const quLeftStartX = endX;
+            const firstContralX = quLeftStartX + 10;
+            const secondContralX = firstContralX + 10;
+            const quLeftEndX = secondContralX + 10;
+            // 顶部直线
+            const topStartX = quLeftEndX;
+            const topEndX = width - 40  + secondContralX;
+
+            // 右侧的曲线
+            const quRightStartX = topEndX;
+            const firstContralRightX = quRightStartX + 10;
+            const secondContralRightX = firstContralRightX + 10;
+            const quRightEndX = secondContralRightX + 10;
+
+            // 右侧的直线
+            const startRightX = quRightEndX;
+            const endRightX = 500;
+            ctx.clearRect(0,0, 550, 50);
+            drawLine(startX, 46, endX, 46);
+            drawQu1(quLeftStartX, 46, firstContralX, 46, secondContralX, 46 - 36, quLeftEndX, 46 - 36);
+            drawLine(topStartX, 46 - 36, topEndX, 46 - 36);
+            drawQu1(quRightStartX, 46 - 36, firstContralRightX, 46 - 36, secondContralRightX, 46, quRightEndX, 46);
+            drawLine(startRightX, 46, endRightX, 46);
+            drawRect(lefts - 60, -10, 60 , 60, "red");
+        }
+        let lefts = 0;
+        let timer= null;
+        function start() {
+            if ( timer ) {
+                clearInterval(timer);
+                timer = null;
+            }
+            timer = setInterval( () => {
+                lefts += 20;
+                if ( lefts > 500 ) {
+                    lefts = 0;
+                }
+                draw(currentBlockLeft, currentBlockWidth, currentBlockHeight)
+            }, 1000/10);
+        }
+        // draw();
+    </script>
+    <script>
+        $("li").on("click", function() {
+            currentBlockLeft = $(this).position().left;
+            currentBlockWidth = $(this).outerWidth();
+            currentBlockHeight = $(this).outerHeight();
+            start();
+        });
+        start();
+    </script>
+</body>
+</html>

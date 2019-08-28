@@ -1,4 +1,6 @@
-import { d3Scale } from "d3";
+import * as scale from "d3-scale";
 
 // 用于获取 D3 各种轴的信息
-const linear = d3Scale.scaleLinear();
+
+// 线性轴
+export const linear = scale.scaleLinear();
