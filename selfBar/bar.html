@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #canvas{
+            border: 1px solid #333;
+            margin: 50px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="./src/zrender/zrender.js"></script>
+    <script>
+        const canvas = d3.select("#canvas");
+        const ctx = canvas.node().getContext("2d");
+    </script>
+</body>
+</html>

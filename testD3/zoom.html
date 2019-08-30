@@ -40,11 +40,14 @@
     }
     function brush() {
         drawRect(500,500,100,100, "", d3.event.transform);
+
+        // 关键步骤，使用 rescale 去重新计算每个轴的 domain
         drawTicks(d3.event.transform.rescaleX(scale));
         drawTicksY(d3.event.transform.rescaleY(scaleY));
     }
     const scale = d3.scaleLinear().domain([-1,601]).range([-1,601]);
     const scaleY = d3.scaleLinear().domain([-1,601]).range([-1,601]);
+    console.log(scale.range());
     drawTicks(scale);
     function drawTicks(scale) {
         const ticks = scale.ticks(10);
